@@ -90,14 +90,14 @@ public class Kalah {
                         }
                     }                
                     
-                    if(!gameOver){
+                    // move seeds and change user turns
+                    if(!gameOver){ 
                         goAgain = game.moveSeeds(selectedHouse, playerTurn);
                     }
                                         
                     if(goAgain == 2){ // if need to change player
                         playerTurn = !playerTurn;
                     }
-                    
                     
                 }
 	}
