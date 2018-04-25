@@ -10,7 +10,8 @@ import com.qualitascorpus.testsupport.MockIO;
 public class Kalah {
     boolean playerTurn = false; // false = player1, true = player2
     boolean gameOver = false;
-    boolean goAgain = false;
+    boolean quit = false;
+    int goAgain = 2; // 0 = empty house, 1 = anotherTurn, 2 = nextPlayerTurn
     
 	public static void main(String[] args) {           
 		new Kalah().play(new MockIO());
@@ -36,45 +37,56 @@ public class Kalah {
                         // keep program alive3
                         
                     values = game.updateBoard();
-                    gameOver = game.checkGameStatus(); // check for game status
-                    String keyBoard = "";
+                    gameOver = game.checkGameStatus(playerTurn); // check if board is cleared
+                    String keyBoard = "q";
+                    
                     if(!gameOver){
-                        io.println("+----+-------+-------+-------+-------+-------+-------+----+");
-                        io.println("| P2 | 6[ "+values[13]+"] | 5[ "+values[12]+"] | 4[ "+values[11]+"] | 3[ "+values[10]+"] | 2[ "+values[9]+"] | 1[ "+values[8]+"] |  "+values[0]+" |");
-                        io.println("|    |-------+-------+-------+-------+-------+-------|    |");
-                        io.println("|  "+values[1]+" | 1[ "+values[2]+"] | 2[ "+values[3]+"] | 3[ "+values[4]+"] | 4[ "+values[5]+"] | 5[ "+values[6]+"] | 6[ "+values[7]+"] | P1 |");
-                        io.println("+----+-------+-------+-------+-------+-------+-------+----+");
-                        if(playerTurn){
-                            String inputText = "Player P2's turn - Specify house number or 'q' to quit: ";
-                            //selectedHouse = io.readInteger(inputText, 1, 6, 0, inputText) - 1;
-                            keyBoard = io.readFromKeyboard(inputText);
+                        if(goAgain == 0){ // selected empty house
+                            io.println("House is empty. Move again."); 
                         } else {
-                            //io.println("Player 1's turn - Specify house number or 'q' to quit: ");
-                            String inputText = "Player P1's turn - Specify house number or 'q' to quit: ";
-                            //selectedHouse = io.readInteger(inputText, 1, 6, 0, inputText) - 1;
-                            keyBoard = io.readFromKeyboard(inputText);
+                            io.println("+----+-------+-------+-------+-------+-------+-------+----+"); 
+                            String player2Line = String.format("| P2 | 6[%2d] | 5[%2d] | 4[%2d] | 3[%2d] | 2[%2d] | 1[%2d] | %2d |", values[13], values[12], values[11], values[10], values[9], values[8], values[0]);
+                            io.println(player2Line);
+                            io.println("|    |-------+-------+-------+-------+-------+-------|    |");
+                            String player1Line = String.format("| %2d | 1[%2d] | 2[%2d] | 3[%2d] | 4[%2d] | 5[%2d] | 6[%2d] | P1 |", values[1], values[2], values[3], values[4], values[5], values[6], values[7]);
+                            io.println(player1Line);
+                            io.println("+----+-------+-------+-------+-------+-------+-------+----+");
+                            if(playerTurn){
+                                String inputText = "Player P2's turn - Specify house number or 'q' to quit: ";
+                                keyBoard = io.readFromKeyboard(inputText);
+                            } else {
+                                String inputText = "Player P1's turn - Specify house number or 'q' to quit: ";
+                                keyBoard = io.readFromKeyboard(inputText);
+                            }
                         }
+                        
                     }
                     
                     if("q".equals(keyBoard)){
                         gameOver = true;
+                        quit = true;
                     } else {
                         selectedHouse = Integer.parseInt(keyBoard) - 1;
                     }
                     
                     if(gameOver){
                         io.println("Game over");
-                        io.println("+----+-------+-------+-------+-------+-------+-------+----+");
-                        io.println("| P2 | 6[ "+values[13]+"] | 5[ "+values[12]+"] | 4[ "+values[11]+"] | 3[ "+values[10]+"] | 2[ "+values[9]+"] | 1[ "+values[8]+"] |  "+values[0]+" |");
+                        io.println("+----+-------+-------+-------+-------+-------+-------+----+"); 
+                        String player2Line = String.format("| P2 | 6[%2d] | 5[%2d] | 4[%2d] | 3[%2d] | 2[%2d] | 1[%2d] | %2d |", values[13], values[12], values[11], values[10], values[9], values[8], values[0]);
+                        io.println(player2Line);
                         io.println("|    |-------+-------+-------+-------+-------+-------|    |");
-                        io.println("|  "+values[1]+" | 1[ "+values[2]+"] | 2[ "+values[3]+"] | 3[ "+values[4]+"] | 4[ "+values[5]+"] | 5[ "+values[6]+"] | 6[ "+values[7]+"] | P1 |");
+                        String player1Line = String.format("| %2d | 1[%2d] | 2[%2d] | 3[%2d] | 4[%2d] | 5[%2d] | 6[%2d] | P1 |", values[1], values[2], values[3], values[4], values[5], values[6], values[7]);
+                        io.println(player1Line);
                         io.println("+----+-------+-------+-------+-------+-------+-------+----+");
+                        
+                        if(!quit){
                         io.println("    player 1:" + values[0]);
                         io.println("    player 2:" + values[1]);
-                        if(values[0] > values[1]){
-                            io.println("Player 1 wins!");
-                        } else {
-                            io.println("Player 2 wins!");
+                            if(values[0] > values[1]){
+                                io.println("Player 1 wins!");
+                            } else {
+                                io.println("Player 2 wins!");
+                            }
                         }
                     }                
                     
@@ -82,7 +94,7 @@ public class Kalah {
                         goAgain = game.moveSeeds(selectedHouse, playerTurn);
                     }
                                         
-                    if(!goAgain){ // if need to change player
+                    if(goAgain == 2){ // if need to change player
                         playerTurn = !playerTurn;
                     }
                     
