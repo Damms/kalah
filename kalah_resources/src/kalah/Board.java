@@ -103,7 +103,6 @@ public class Board {
     public boolean checkEndingHouse(boolean turn, boolean playerTurn, int house){ // check if house has been cleared
         
         if(turn){ // ends on player 2 side
-            System.out.println("Ended on player 2 side checks "+house);
             if(this.player2Houses[house].getSeeds() == 1){
                 this.player2Houses[house].setSeeds(0);
                 int seedsToAdd = 0;
@@ -121,7 +120,6 @@ public class Board {
             }
         } 
         else { // ends on player 1 side
-            System.out.println("Ended on player 1 side checks "+house);
             if(this.player1Houses[house].getSeeds() == 1){
                 this.player1Houses[house].setSeeds(0);
                 int seedsToAdd = 0;
