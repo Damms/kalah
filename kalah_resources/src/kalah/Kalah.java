@@ -38,28 +38,27 @@ public class Kalah {
                         
                     values = game.updateBoard();
                     gameOver = game.checkGameStatus(playerTurn); // check if board is cleared
-                    String keyBoard = "q";
+                    String keyBoard = "1";
                     
+                    if(goAgain == 0){ // selected empty house
+                        goAgain = 1; // player goes again
+                        io.println("House is empty. Move again."); 
+                    } 
+                    io.println("+----+-------+-------+-------+-------+-------+-------+----+"); 
+                    String player2Line = String.format("| P2 | 6[%2d] | 5[%2d] | 4[%2d] | 3[%2d] | 2[%2d] | 1[%2d] | %2d |", values[13], values[12], values[11], values[10], values[9], values[8], values[0]);
+                    io.println(player2Line);
+                    io.println("|    |-------+-------+-------+-------+-------+-------|    |");
+                    String player1Line = String.format("| %2d | 1[%2d] | 2[%2d] | 3[%2d] | 4[%2d] | 5[%2d] | 6[%2d] | P1 |", values[1], values[2], values[3], values[4], values[5], values[6], values[7]);
+                    io.println(player1Line);
+                    io.println("+----+-------+-------+-------+-------+-------+-------+----+");
                     if(!gameOver){
-                        if(goAgain == 0){ // selected empty house
-                            io.println("House is empty. Move again."); 
+                        if(playerTurn){
+                            String inputText = "Player P2's turn - Specify house number or 'q' to quit: ";
+                            keyBoard = io.readFromKeyboard(inputText);
                         } else {
-                            io.println("+----+-------+-------+-------+-------+-------+-------+----+"); 
-                            String player2Line = String.format("| P2 | 6[%2d] | 5[%2d] | 4[%2d] | 3[%2d] | 2[%2d] | 1[%2d] | %2d |", values[13], values[12], values[11], values[10], values[9], values[8], values[0]);
-                            io.println(player2Line);
-                            io.println("|    |-------+-------+-------+-------+-------+-------|    |");
-                            String player1Line = String.format("| %2d | 1[%2d] | 2[%2d] | 3[%2d] | 4[%2d] | 5[%2d] | 6[%2d] | P1 |", values[1], values[2], values[3], values[4], values[5], values[6], values[7]);
-                            io.println(player1Line);
-                            io.println("+----+-------+-------+-------+-------+-------+-------+----+");
-                            if(playerTurn){
-                                String inputText = "Player P2's turn - Specify house number or 'q' to quit: ";
-                                keyBoard = io.readFromKeyboard(inputText);
-                            } else {
-                                String inputText = "Player P1's turn - Specify house number or 'q' to quit: ";
-                                keyBoard = io.readFromKeyboard(inputText);
-                            }
+                            String inputText = "Player P1's turn - Specify house number or 'q' to quit: ";
+                            keyBoard = io.readFromKeyboard(inputText);
                         }
-                        
                     }
                     
                     if("q".equals(keyBoard)){
@@ -72,20 +71,24 @@ public class Kalah {
                     if(gameOver){
                         io.println("Game over");
                         io.println("+----+-------+-------+-------+-------+-------+-------+----+"); 
-                        String player2Line = String.format("| P2 | 6[%2d] | 5[%2d] | 4[%2d] | 3[%2d] | 2[%2d] | 1[%2d] | %2d |", values[13], values[12], values[11], values[10], values[9], values[8], values[0]);
+                        /*String*/ player2Line = String.format("| P2 | 6[%2d] | 5[%2d] | 4[%2d] | 3[%2d] | 2[%2d] | 1[%2d] | %2d |", values[13], values[12], values[11], values[10], values[9], values[8], values[0]);
                         io.println(player2Line);
                         io.println("|    |-------+-------+-------+-------+-------+-------|    |");
-                        String player1Line = String.format("| %2d | 1[%2d] | 2[%2d] | 3[%2d] | 4[%2d] | 5[%2d] | 6[%2d] | P1 |", values[1], values[2], values[3], values[4], values[5], values[6], values[7]);
+                        /*String*/ player1Line = String.format("| %2d | 1[%2d] | 2[%2d] | 3[%2d] | 4[%2d] | 5[%2d] | 6[%2d] | P1 |", values[1], values[2], values[3], values[4], values[5], values[6], values[7]);
                         io.println(player1Line);
                         io.println("+----+-------+-------+-------+-------+-------+-------+----+");
                         
                         if(!quit){
-                        io.println("    player 1:" + values[0]);
-                        io.println("    player 2:" + values[1]);
-                            if(values[0] > values[1]){
+                            int p1Score = values[0]+values[2]+values[3]+values[4]+values[5]+values[6]+values[7];
+                            int p2Score = values[13]+values[12]+values[11]+values[10]+values[9]+values[8]+values[1];
+                            io.println("\tplayer 1:" + p1Score ); // add all seeds in house to store
+                            io.println("\tplayer 2:" + p2Score );
+                            if(p1Score >  p2Score){
                                 io.println("Player 1 wins!");
-                            } else {
+                            } else if (p1Score <  p2Score){
                                 io.println("Player 2 wins!");
+                            } else {
+                                io.println("A tie!");
                             }
                         }
                     }                

@@ -49,13 +49,13 @@ public class Board {
                 count1++;
                 }
             }
-            
-            if(count1 == 6 || count2 == 6){
-                return true;
-            }
+        }
+        if(count1 == 6 || count2 == 6){ // one side of board is cleared
+            return true;
         }
         return false;
     }
+    
     // 0 = empty house, 1 = anotherTurn, 2 = nextPlayerTurn
     public int moveSeeds(int houseNum, boolean playerTurn){ // check if house has been cleared
         // test

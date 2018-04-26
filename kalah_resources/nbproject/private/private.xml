@@ -4,9 +4,10 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/jdamm/OneDrive/University/Softeng701/Assignment3/kalah/kalah_resources/src/kalah/Board.java</file>
-            <file>jar:file:/C:/Users/jdamm/OneDrive/University/Softeng701/Assignment3/kalah/kalah_resources/kalah.jar!/test/full_game1.txt</file>
+            <file>file:/C:/Users/jdamm/OneDrive/University/Softeng701/Assignment3/kalah/kalah_resources/src/kalah/House.java</file>
+            <file>file:/C:/Users/jdamm/OneDrive/University/Softeng701/Assignment3/kalah/kalah_resources/src/kalah/Store.java</file>
             <file>file:/C:/Users/jdamm/OneDrive/University/Softeng701/Assignment3/kalah/kalah_resources/src/kalah/Kalah.java</file>
-            <file>jar:file:/C:/Users/jdamm/OneDrive/University/Softeng701/Assignment3/kalah/kalah_resources/kalah.jar!/test/quit.txt</file>
+            <file>file:/C:/Users/jdamm/OneDrive/University/Softeng701/Assignment3/kalah/kalah_resources/src/kalah/Building.java</file>
         </group>
     </open-files>
 </project-private>
