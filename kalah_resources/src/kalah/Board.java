@@ -25,8 +25,8 @@ public class Board {
         this.player2Store = p2Store;
     }
     
+    // update display values with backend stored values
     public int[] updateBoard(){
-        //
         values[0] = this.player1Store.getSeeds(); // player 1 store
         values[1] = this.player2Store.getSeeds(); // player 2 store
         for(int i = 0; i < 6; i++){
@@ -36,8 +36,8 @@ public class Board {
         return values;
     }
     
-    public boolean checkGameStatus(boolean playerTurn){ // check if house has been cleared
-        //
+    // check if one side has been cleared - graceful end
+    public boolean checkGameStatus(boolean playerTurn){ 
         int count1 = 0, count2 = 0;
         for(int i = 0; i < 6; i++){
             if(playerTurn){
@@ -56,30 +56,30 @@ public class Board {
         return false;
     }
     
-    // 0 = empty house, 1 = anotherTurn, 2 = nextPlayerTurn
-    public int moveSeeds(int houseNum, boolean playerTurn){ // check if house has been cleared
-        // test
+    // Return values : 0 = empty house try again, 1 = anotherTurn, 2 = nextPlayerTurn
+    public int moveSeeds(int houseNum, boolean playerTurn){ 
         int seedsInHouse = 0;
         int house = houseNum;
         boolean turn = playerTurn;
-        if(playerTurn){
+        
+        if(playerTurn){ // player 2 turn
             seedsInHouse = this.player2Houses[house].getSeeds();
             this.player2Houses[house].setSeeds(0);
-        } else {
+        } else { // player 1 turn
             seedsInHouse = this.player1Houses[house].getSeeds();
             this.player1Houses[house].setSeeds(0);
         }     
         
         if(seedsInHouse == 0){ // empty house
-            return 0;
+            return 0; // empty house try again
         }
         
-        while(seedsInHouse > 0){
+        while(seedsInHouse > 0){ // sow seeds into houses/stores
             house++; // next house
             if(house == 6){ // add seed into store if it's your turn
-                
                 house = -1;
-                if(turn == playerTurn && seedsInHouse > 0){ // add to players store
+                
+                if(turn == playerTurn && seedsInHouse > 0){ // add to players store if it's currently on their store
                     if(playerTurn){ // player 2 store
                         this.player2Store.incrementSeeds();
                     } else { // player 1 store
@@ -88,10 +88,10 @@ public class Board {
                     seedsInHouse--; // used a seed
                     
                     if(seedsInHouse == 0){ // last seed was in player store
-                        house = 10;
+                        house = 10; // this value will be checked in checkEnding() function
                     }
                 }
-                turn = !turn;
+                turn = !turn; // other side of board
               
             } 
             else { // add to houses
@@ -112,7 +112,7 @@ public class Board {
     public int checkEnding(boolean turn, boolean playerTurn, int house){ // check if house has been cleared
         int seedsToAdd = 0;
         if(house == 10){ // ended on store
-            return 1;
+            return 1; // another turn
         }
         if(turn){ // ends on player 2 side
             if(playerTurn){ // was originally player 2 turn
@@ -121,7 +121,7 @@ public class Board {
                     this.player2Store.add(seedsToAdd+1);
                     this.player2Houses[house].setSeeds(0); // sets current house to 0
                     this.player1Houses[0+(5-house)].setSeeds(0); // sets opposite house to 0 seeds
-                    return 2;
+                    return 2; // next players turn
                 }
             }
         } 
@@ -132,11 +132,11 @@ public class Board {
                     this.player1Store.add(seedsToAdd+1);
                     this.player1Houses[house].setSeeds(0); // sets current house to 0
                     this.player2Houses[0+(5-house)].setSeeds(0); // sets opposite house to 0 seeds
-                    return 2;
+                    return 2; // next players turn
                 }
             }
         }
-        return 2;
+        return 2; // next players turn
     }
   
 } // end of board
