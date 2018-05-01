@@ -10,14 +10,21 @@ package kalah;
  * @author jdamm
  */
 public class Board {
-    int[] values = new int[14]; // 0 is p1 store value, 1 is p2 store value //  2-7 is p1 house values, 8-13 is p2 house values
-    House[] player1Houses = new House[6];
-    House[] player2Houses = new House[6];
+    int numberOfBuildingsOnBoard = 14;
+    int numberOfHouses = 6;                           
+    int[] values = new int[numberOfBuildingsOnBoard]; 
+    House[] player1Houses = new House[numberOfHouses];
+    House[] player2Houses = new House[numberOfHouses];
     Store player1Store = null;
     Store player2Store = null;
+    int seedsInHouse = 0;
+    int firstHouse = -1;
+    int emptyHouse = 10;
+    int house;
+    boolean turn;
     
     public Board(House[] player1House, House[] player2House, Store p1Store, Store p2Store){
-        for(int i = 0; i < 6; i++){
+        for(int i = 0; i < numberOfHouses; i++){
             this.player1Houses[i] = player1House[i];
             this.player2Houses[i] = player2House[i];
         }
@@ -26,20 +33,26 @@ public class Board {
     }
     
     // update display values with backend stored values
-    public int[] updateBoard(){
-        values[0] = this.player1Store.getSeeds(); // player 1 store
-        values[1] = this.player2Store.getSeeds(); // player 2 store
-        for(int i = 0; i < 6; i++){
-            values[2+i] = this.player1Houses[i].getSeeds(); // player 1 houses
-            values[8+i] = this.player2Houses[i].getSeeds(); // player 2 houses
+    public int[] updateValues(){
+        
+        values[0] = this.player1Store.getSeeds();
+        values[1] = this.player2Store.getSeeds();
+        
+        for(int i = 0; i < numberOfHouses; i++){
+            values[2+i] = this.player1Houses[i].getSeeds();
+            values[8+i] = this.player2Houses[i].getSeeds();
         }
+        
         return values;
+        
     }
     
     // check if one side has been cleared - graceful end
     public boolean checkGameStatus(boolean playerTurn){ 
         int count1 = 0, count2 = 0;
-        for(int i = 0; i < 6; i++){
+        
+        for(int i = 0; i < numberOfHouses; i++){
+            
             if(playerTurn){
                 if(this.player2Houses[i].getSeeds() == 0){
                     count2++;
@@ -49,18 +62,77 @@ public class Board {
                 count1++;
                 }
             }
+            
         }
-        if(count1 == 6 || count2 == 6){ // one side of board is cleared
+        
+        if(count1 == numberOfHouses || count2 == numberOfHouses){ 
             return true;
         }
         return false;
+        
     }
     
     // Return values : 0 = empty house try again, 1 = anotherTurn, 2 = nextPlayerTurn
     public int moveSeeds(int houseNum, boolean playerTurn){ 
-        int seedsInHouse = 0;
-        int house = houseNum;
-        boolean turn = playerTurn;
+        seedsInHouse = 0;
+        house = houseNum;
+        turn = playerTurn;
+        
+        getSeedsInHouse(playerTurn);
+        
+        if(seedsInHouse == 0){ 
+            return 0; 
+        }
+        
+        spreadSeeds(playerTurn);
+
+        return captureCheck(playerTurn);
+        
+    }
+    
+    public int captureCheck(boolean playerTurn){
+        int seedsToAdd = 0;
+        
+        if(house == emptyHouse){
+            return 1; 
+        }
+        
+        if(turn){ // ends on player 2 side
+            
+            if(playerTurn){ // was originally player 2 turn
+                seedsToAdd = this.player1Houses[0+(5-house)].getSeeds();
+                
+                if(this.player2Houses[house].getSeeds() == 1 && seedsToAdd > 0){
+                    this.player2Store.add(seedsToAdd+1);
+                    this.player2Houses[house].setSeeds(0); // sets current house to 0
+                    this.player1Houses[0+(5-house)].setSeeds(0); // sets opposite house to 0 seeds
+                    return 2; // next players turn
+                }
+                
+            }
+            
+        } 
+        else { // ends on player 1 side
+            
+            if(!playerTurn){ // was originally player 1 turn
+                seedsToAdd = this.player2Houses[0+(5-house)].getSeeds();
+                
+                if(this.player1Houses[house].getSeeds() == 1 && seedsToAdd > 0){ 
+                    
+                    this.player1Store.add(seedsToAdd+1);
+                    this.player1Houses[house].setSeeds(0); // sets current house to 0
+                    this.player2Houses[0+(5-house)].setSeeds(0); // sets opposite house to 0 seeds
+                    return 2; // next players turn
+                }
+                
+            }
+            
+        }
+        return 2; 
+    }
+    
+     // update display values with backend stored values
+    public void getSeedsInHouse(boolean playerTurn){
         
         if(playerTurn){ // player 2 turn
             seedsInHouse = this.player2Houses[house].getSeeds();
@@ -68,75 +140,54 @@ public class Board {
         } else { // player 1 turn
             seedsInHouse = this.player1Houses[house].getSeeds();
             this.player1Houses[house].setSeeds(0);
-        }     
-        
-        if(seedsInHouse == 0){ // empty house
-            return 0; // empty house try again
         }
         
-        while(seedsInHouse > 0){ // sow seeds into houses/stores
-            house++; // next house
-            if(house == 6){ // add seed into store if it's your turn
-                house = -1;
-                
-                if(turn == playerTurn && seedsInHouse > 0){ // add to players store if it's currently on their store
-                    if(playerTurn){ // player 2 store
-                        this.player2Store.incrementSeeds();
-                    } else { // player 1 store
-                        this.player1Store.incrementSeeds();
-                    }
-                    seedsInHouse--; // used a seed
-                    
-                    if(seedsInHouse == 0){ // last seed was in player store
-                        house = 10; // this value will be checked in checkEnding() function
-                    }
-                }
-                turn = !turn; // other side of board
-              
-            } 
-            else { // add to houses
-                
-                if(turn){ // player 2
-                    this.player2Houses[house].incrementSeeds();
-                } else { // player 1
-                    this.player1Houses[house].incrementSeeds();
-                }
-                seedsInHouse--; // used a seed
-            }            
-        }
-        
-        // check if current house had 0 seeds if so add pebble and opposite to player store
-        return checkEnding(turn, playerTurn, house);
     }
     
-    public int checkEnding(boolean turn, boolean playerTurn, int house){ // check if house has been cleared
-        int seedsToAdd = 0;
-        if(house == 10){ // ended on store
-            return 1; // another turn
+    public void spreadSeeds(boolean playerTurn){
+        // spread seeds
+        while(seedsInHouse > 0){
+            house++;
+            
+            if(house == 6){ 
+                addSeedToStore(playerTurn);
+            } 
+            else { 
+                addSeedToHouse(playerTurn);
+            }            
+            
         }
-        if(turn){ // ends on player 2 side
-            if(playerTurn){ // was originally player 2 turn
-                seedsToAdd = this.player1Houses[0+(5-house)].getSeeds();
-                if(this.player2Houses[house].getSeeds() == 1 && seedsToAdd > 0){ // capture check
-                    this.player2Store.add(seedsToAdd+1);
-                    this.player2Houses[house].setSeeds(0); // sets current house to 0
-                    this.player1Houses[0+(5-house)].setSeeds(0); // sets opposite house to 0 seeds
-                    return 2; // next players turn
-                }
+    }
+    
+    public void addSeedToStore(boolean playerTurn){
+        house = firstHouse;
+                
+        if(turn == playerTurn && seedsInHouse > 0){ 
+
+            if(playerTurn){ // player 2
+                this.player2Store.incrementSeeds();
+            } else { // player 1 
+                this.player1Store.incrementSeeds();
             }
-        } 
-        else { // ends on player 1 side
-            if(!playerTurn){ // was originally player 2 turn
-                seedsToAdd = this.player2Houses[0+(5-house)].getSeeds();
-                if(this.player1Houses[house].getSeeds() == 1 && seedsToAdd > 0){ // capture check
-                    this.player1Store.add(seedsToAdd+1);
-                    this.player1Houses[house].setSeeds(0); // sets current house to 0
-                    this.player2Houses[0+(5-house)].setSeeds(0); // sets opposite house to 0 seeds
-                    return 2; // next players turn
-                }
+            seedsInHouse--; 
+
+            if(seedsInHouse == 0){ 
+                house = emptyHouse;
             }
         }
-        return 2; // next players turn
+        
+        turn = !turn;
+    }
+    
+    public void addSeedToHouse(boolean playerTurn){
+        
+        if(turn){ // player 2
+            this.player2Houses[house].incrementSeeds();
+        } else { // player 1
+            this.player1Houses[house].incrementSeeds();
+        }
+        seedsInHouse--; 
+        
     }
   
-} // end of board
+} 
