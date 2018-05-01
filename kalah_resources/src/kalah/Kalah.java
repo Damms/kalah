@@ -21,17 +21,14 @@ public class Kalah {
         int numberOfBuildingsOnBoards = 14;
         int[] playerScores = new int[2];
 
-        // Setup the board
         House[] player1Houses = new House[numberOfHouses];
         House[] player2Houses = new House[numberOfHouses];
-        
-        // initialize seeds in each house
+
         for(int i = 0; i < 6; i++){
             player1Houses[i] = new House(seedsInHouse); 
             player2Houses[i] = new House(seedsInHouse); 
         }
-        
-        // initialize player's stores
+
         Store player1 = new Store(initSeedsInStore);
         Store player2 = new Store(initSeedsInStore);
 
@@ -44,6 +41,7 @@ public class Kalah {
         int[] values = new int[numberOfBuildingsOnBoards];
         int selectedHouse = 0;
 
+        
         while(!gameOver){
 
             // update the backend gameboard and check status of the game
